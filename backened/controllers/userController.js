@@ -5,7 +5,8 @@ const jwt = require("jsonwebtoken");
 const sendEmail = require("../untils/sendMail");
 const sendToken = require("../untils/jwtToken");
 const { isAuthenticatedUser } = require("../middleware/auth");
-const path = require("path"); // ✅ ye line userController.js ke top pe add karo
+const path = require("path");
+const { getFrontendUrl, getBackendUrl } = require("../untils/origins");
 
 // -----------------------------
 // Helper: Activation Token
@@ -40,19 +41,18 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler("User already exists", 400));
     }
 
-    const fileUrl = `http://localhost:3000/uploads/${req.file.filename}`;
+    const fileUrl = `${getBackendUrl(req)}/uploads/${req.file.filename}`;
 
-const user = await User.create({
-    name,
-    email,
-    password,
-    avatar: fileUrl,   // ✅ sirf string save
-    isActivated: false,
-});
-
+    const user = await User.create({
+        name,
+        email,
+        password,
+        avatar: fileUrl,
+        isActivated: false,
+    });
 
     const activationToken = createActivationToken(user);
-    const activationUrl = `http://localhost:5173/activation/${activationToken}`;
+    const activationUrl = `${getFrontendUrl()}/activation/${activationToken}`;
 
     try {
         await sendEmail({
@@ -138,6 +138,8 @@ exports.logoutUser = catchAsyncErrors(async (req, res, next) => {
     res.cookie("token", null, {
         expires: new Date(Date.now()),
         httpOnly: true,
+        sameSite: "none",
+        secure: true,
     });
 
     res.status(200).json({
@@ -217,7 +219,7 @@ exports.updateAvatar = catchAsyncErrors(async (req, res, next) => {
         }
     }
 
-    const fileUrl = `http://localhost:3000/uploads/${req.file.filename}`;
+    const fileUrl = `${getBackendUrl(req)}/uploads/${req.file.filename}`;
 
     user.avatar = fileUrl;
     await user.save();

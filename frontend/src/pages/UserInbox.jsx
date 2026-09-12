@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { AiOutlineArrowRight, AiOutlineSend } from "react-icons/ai";
 import { TfiGallery } from "react-icons/tfi";
 import styles from "../styles/style";
-import { server } from "../server";
+import { server, socket_url } from "../server";
 import Header from "../components/Layout/Header";
 // const ENDPOINT = "https://socket-ecommerce-tu68.onrender.com/";
 // const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
@@ -26,8 +26,8 @@ const UserInbox = () => {
   const [open, setOpen] = useState(false);
   const scrollRef = useRef(null);
 
-   const ENDPOINT = "http://localhost:4000";
-    const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
+  const ENDPOINT = socket_url;
+  const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
   useEffect(() => {
     socketId.on("getMessage", (data) => {

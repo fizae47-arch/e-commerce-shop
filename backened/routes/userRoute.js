@@ -16,13 +16,12 @@ const {
     getUserInfo,
 } = require("../controllers/userController");
 const multer = require("multer");
-const path = require("path");
 const { isAuthenticatedUser } = require("../middleware/auth");
+const { getUploadDir } = require("../untils/uploadDir");
 
-// Multer configuration — save to disk
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, "..", "uploads"));
+        cb(null, getUploadDir("uploads"));
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);

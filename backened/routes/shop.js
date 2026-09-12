@@ -9,6 +9,7 @@ const cloudinary = require("cloudinary");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHandler = require("../untils/ErrorHandler");
 const sendShopToken = require("../untils/shopToken");
+const { getFrontendUrl } = require("../untils/origins");
 
 // create shop
 router.post("/create-shop", catchAsyncErrors(async (req, res, next) => {
@@ -39,7 +40,7 @@ router.post("/create-shop", catchAsyncErrors(async (req, res, next) => {
 
     const activationToken = createActivationToken(seller);
 
-    const activationUrl = `http://localhost:5173/seller/activation/${activationToken}`;
+    const activationUrl = `${getFrontendUrl()}/seller/activation/${activationToken}`;
 
     try {
       await sendMail({

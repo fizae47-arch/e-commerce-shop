@@ -1,4 +1,5 @@
 const ErrorHandler = require("../untils/ErrorHandler");
+const { applyCors } = require("../untils/origins");
 
 module.exports = (err, req, res, next) => {
     err.statusCode = err.statusCode || 500;
@@ -26,6 +27,9 @@ module.exports = (err, req, res, next) => {
         const message = `your url is expired, try again`;
         err = new ErrorHandler(message, 400);
    }
+
+   applyCors(req, res);
+
    res.status(err.statusCode).json({
         success: false,
         message: err.message,

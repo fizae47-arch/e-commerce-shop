@@ -8,9 +8,9 @@ import styles from "../../styles/style";
 import { TfiGallery } from "react-icons/tfi";
 import socketIO from "socket.io-client";
 import { format } from "timeago.js";
-import { server } from "../../server";
+import { server, socket_url } from "../../server";
 
-const ENDPOINT = "http://localhost:4000";
+const ENDPOINT = socket_url;
 
 const DashboardMessages = () => {
   const { seller, isLoading } = useSelector((state) => state.seller);
