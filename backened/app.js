@@ -7,31 +7,35 @@ cloudinary.v2.config({
 });
 
 const express = require("express");
-const cors = require("cors");   // ✅ sirf ek hi baar
+const cors = require("cors");
 const app = express();
 const errorHandler = require("./middleware/error");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const path = require("path");
 
-// ✅ CORS config
-app.use(cors({
-  origin: "http://localhost:5173", // tumhara React frontend
-  credentials: true,               // cookies allow
-}));
+// CORS
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    credentials: true,
+  })
+);
 
-// ✅ Middleware
+// Middleware
 app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
+
+// Local uploads
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// ✅ Routes
+// Routes
 const userRoutes = require("./routes/userRoute");
 const shopRoutes = require("./routes/shop");
-const product = require ("./controllers/product")
-const event = require ("./controllers/event")
-const coupon = require ("./controllers/couponCode")
+const product = require("./controllers/product");
+const event = require("./controllers/event");
+const coupon = require("./controllers/couponCode");
 const order = require("./controllers/order");
 const payment = require("./controllers/payment");
 const conversation = require("./controllers/conversation");
@@ -49,7 +53,7 @@ app.use("/api/v2/conversation", conversation);
 app.use("/api/v2/message", message);
 app.use("/api/v2/withdraw", withdraw);
 
-// ✅ Error Handler
+// Error Handler
 app.use(errorHandler);
 
 module.exports = app;

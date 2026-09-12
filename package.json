@@ -26,5 +26,8 @@
     "nodemon": "^3.1.14",
     "stripe": "^22.6.1"
   },
-  "keywords": []
+  "keywords": [],
+  "devDependencies": {
+    "@vercel/node": "^13.0.0"
+  }
 }

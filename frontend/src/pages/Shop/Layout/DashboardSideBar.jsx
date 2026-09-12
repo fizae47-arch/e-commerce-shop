@@ -1,3 +1,4 @@
+
 import { AiOutlineFolderAdd, AiOutlineGift } from "react-icons/ai";
 import { FiPackage, FiShoppingBag } from "react-icons/fi";
 import { MdOutlineLocalOffer } from "react-icons/md";
@@ -11,7 +12,7 @@ import { HiOutlineReceiptRefund } from "react-icons/hi";
 const DashboardSideBar = ({ active }) => {
   return (
     <div className="w-full h-[90vh] bg-white shadow-sm overflow-y-scroll sticky top-0 left-0 z-10">
-      {/* Dashboard */}
+      {/* single item */}
       <div className="w-full flex items-center p-4">
         <Link to="/dashboard" className="w-full flex items-center">
           <RxDashboard
@@ -28,10 +29,9 @@ const DashboardSideBar = ({ active }) => {
         </Link>
       </div>
 
-      {/* All Orders */}
       <div className="w-full flex items-center p-4">
         <Link to="/dashboard-orders" className="w-full flex items-center">
-          <FiPackage
+          <FiShoppingBag
             size={30}
             color={`${active === 2 ? "crimson" : "#555"}`}
           />
@@ -45,13 +45,9 @@ const DashboardSideBar = ({ active }) => {
         </Link>
       </div>
 
-      {/* All Products */}
       <div className="w-full flex items-center p-4">
         <Link to="/dashboard-products" className="w-full flex items-center">
-          <FiShoppingBag
-            size={30}
-            color={`${active === 3 ? "crimson" : "#555"}`}
-          />
+          <FiPackage size={30} color={`${active === 3 ? "crimson" : "#555"}`} />
           <h5
             className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
               active === 3 ? "text-[crimson]" : "text-[#555]"
@@ -62,7 +58,6 @@ const DashboardSideBar = ({ active }) => {
         </Link>
       </div>
 
-      {/* Create Product */}
       <div className="w-full flex items-center p-4">
         <Link
           to="/dashboard-create-product"
@@ -82,7 +77,6 @@ const DashboardSideBar = ({ active }) => {
         </Link>
       </div>
 
-      {/* All Events */}
       <div className="w-full flex items-center p-4">
         <Link to="/dashboard-events" className="w-full flex items-center">
           <MdOutlineLocalOffer
@@ -99,7 +93,6 @@ const DashboardSideBar = ({ active }) => {
         </Link>
       </div>
 
-      {/* Create Event */}
       <div className="w-full flex items-center p-4">
         <Link to="/dashboard-create-event" className="w-full flex items-center">
           <VscNewFile
@@ -116,7 +109,6 @@ const DashboardSideBar = ({ active }) => {
         </Link>
       </div>
 
-      {/* Withdraw Money */}
       <div className="w-full flex items-center p-4">
         <Link
           to="/dashboard-withdraw-money"
@@ -136,7 +128,6 @@ const DashboardSideBar = ({ active }) => {
         </Link>
       </div>
 
-      {/* Shop Inbox */}
       <div className="w-full flex items-center p-4">
         <Link to="/dashboard-messages" className="w-full flex items-center">
           <BiMessageSquareDetail
@@ -153,7 +144,6 @@ const DashboardSideBar = ({ active }) => {
         </Link>
       </div>
 
-      {/* Discount Codes */}
       <div className="w-full flex items-center p-4">
         <Link to="/dashboard-coupouns" className="w-full flex items-center">
           <AiOutlineGift
@@ -170,7 +160,6 @@ const DashboardSideBar = ({ active }) => {
         </Link>
       </div>
 
-      {/* Refunds */}
       <div className="w-full flex items-center p-4">
         <Link to="/dashboard-refunds" className="w-full flex items-center">
           <HiOutlineReceiptRefund
@@ -187,7 +176,6 @@ const DashboardSideBar = ({ active }) => {
         </Link>
       </div>
 
-      {/* Settings */}
       <div className="w-full flex items-center p-4">
         <Link to="/settings" className="w-full flex items-center">
           <CiSettings
