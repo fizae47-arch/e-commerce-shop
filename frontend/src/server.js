@@ -3,5 +3,5 @@
 
 
 
-export const backend_url = "https://e-commerce-shop-gamma-nine.vercel.app";
+export const backend_url = import.meta.env.VITE_BACKEND_URL;
 export const server = `${backend_url}/api/v2`;
