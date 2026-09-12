@@ -25,10 +25,26 @@ app.use(
 // Middleware
 app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+    limit: "50mb",
+  })
+);
 
 // Local uploads
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "uploads"))
+);
+
+// Backend health check
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "E-Commerce Backend is Running Successfully!",
+  });
+});
 
 // Routes
 const userRoutes = require("./routes/userRoute");
