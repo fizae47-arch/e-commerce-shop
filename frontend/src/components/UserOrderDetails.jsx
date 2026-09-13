@@ -5,7 +5,7 @@ import { server } from "../server";
 import styles from "../styles/style";
 import { useEffect, useState } from "react";
 import { BsFillBagFill } from "react-icons/bs";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { getAllOrdersOfUser } from "../redux/actions/order";
 import { RxCross1 } from "react-icons/rx";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
@@ -15,6 +15,7 @@ const UserOrderDetails = () => {
   const { orders } = useSelector((state) => state.order);
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [comment, setComment] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
@@ -62,6 +63,31 @@ const UserOrderDetails = () => {
     }).catch((error) => {
       toast.error(error.response.data.message);
     })
+  };
+
+  // ✅ Send Message handler — shop ke saath conversation create/find karke inbox pe navigate karta hai
+  const handleMessageSubmit = async () => {
+    const shopId = data?.cart?.[0]?.shopId;
+
+    if (!shopId) {
+      toast.error("Unable to find the shop for this order");
+      return;
+    }
+
+    const groupTitle = shopId + user._id;
+
+    await axios
+      .post(`${server}/conversation/create-new-conversation`, {
+        groupTitle,
+        userId: user._id,
+        sellerId: shopId,
+      })
+      .then((res) => {
+        navigate(`/inbox?${res.data.conversation._id}`);
+      })
+      .catch((error) => {
+        toast.error(error.response?.data?.message || "Something went wrong!");
+      });
   };
 
   return (
@@ -240,9 +266,12 @@ const UserOrderDetails = () => {
         </div>
       </div>
       <br />
-      <Link to="/">
-        <div className={`${styles.button} text-white`}>Send Message</div>
-      </Link>
+      <div
+        className={`${styles.button} text-white cursor-pointer`}
+        onClick={handleMessageSubmit}
+      >
+        Send Message
+      </div>
       <br />
       <br />
     </div>
