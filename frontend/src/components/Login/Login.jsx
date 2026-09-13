@@ -35,7 +35,7 @@ export default function Login() {
       );
 
       toast.success("Login Successful!");
-      navigate("/dashboard");
+      navigate("/");
       window.location.reload(true);
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");

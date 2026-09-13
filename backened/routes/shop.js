@@ -24,8 +24,7 @@ router.post("/create-shop", catchAsyncErrors(async (req, res, next) => {
       folder: "avatars",
     });
 
-
-    const seller = {
+    const seller = await Shop.create({
       name: req.body.name,
       email: email,
       password: req.body.password,
@@ -36,25 +35,20 @@ router.post("/create-shop", catchAsyncErrors(async (req, res, next) => {
       address: req.body.address,
       phoneNumber: req.body.phoneNumber,
       zipCode: req.body.zipCode,
-    };
+    });
 
-    const activationToken = createActivationToken(seller);
-
-    const activationUrl = `${getFrontendUrl()}/seller/activation/${activationToken}`;
-
+    // Optional welcome email — login ke liye zaroori nahi, fail ho to bhi shop create rahega
     try {
       await sendMail({
         email: seller.email,
-        subject: "Activate your Shop",
-        message: `Hello ${seller.name}, please click on the link to activate your shop: ${activationUrl}`,
+        subject: "Welcome to your new Shop",
+        message: `Hello ${seller.name}, your shop account has been created successfully!`,
       });
-      res.status(201).json({
-        success: true,
-        message: `please check your email:- ${seller.email} to activate your shop!`,
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
+    } catch (mailError) {
+      console.log("Email sending failed:", mailError.message);
     }
+
+    sendShopToken(seller, 201, res);
   } catch (error) {
     return next(new ErrorHandler(error.message, 400));
   }
@@ -168,12 +162,12 @@ router.get(
   catchAsyncErrors(async (req, res, next) => {
     try {
       const isProduction = process.env.NODE_ENV === "production";
-res.cookie("seller_token", null, {
-  expires: new Date(Date.now()),
-  httpOnly: true,
-  sameSite: isProduction ? "none" : "lax",
-  secure: isProduction,
-});
+      res.cookie("seller_token", null, {
+        expires: new Date(Date.now()),
+        httpOnly: true,
+        sameSite: isProduction ? "none" : "lax",
+        secure: isProduction,
+      });
       res.status(201).json({
         success: true,
         message: "Log out successful!",
@@ -208,26 +202,25 @@ router.put(
     try {
       let existsSeller = await Shop.findById(req.seller._id);
 
-        const imageId = existsSeller.avatar.public_id;
+      const imageId = existsSeller.avatar.public_id;
 
-        await cloudinary.v2.uploader.destroy(imageId);
+      await cloudinary.v2.uploader.destroy(imageId);
 
-        const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-          folder: "avatars",
-          width: 150,
-        });
+      const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
+        folder: "avatars",
+        width: 150,
+      });
 
-        existsSeller.avatar = {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
-        };
+      existsSeller.avatar = {
+        public_id: myCloud.public_id,
+        url: myCloud.secure_url,
+      };
 
-  
       await existsSeller.save();
 
       res.status(200).json({
         success: true,
-        seller:existsSeller,
+        seller: existsSeller,
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
