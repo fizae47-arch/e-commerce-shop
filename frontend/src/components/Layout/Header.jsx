@@ -113,13 +113,13 @@ const Header = ({ activeHeading }) => {
                   const product_name = i.name.replace(/\s+/g, "-");
                   return (
                     <Link
-                      to={`/product/${i._id}`} 
+                      to={`/product/${i._id}`}
                       key={index}
                       onClick={closeSearch} // ✅ select karte hi close
                     >
                       <div className="w-full flex items-start py-3">
                         <img
-                           src={i.images && i.images[0]?.url} 
+                          src={i.images && i.images[0]?.url}
                           alt={i.name}
                           className="h-[40px] w-[40px] mr-[10px]"
                         />
@@ -210,17 +210,17 @@ const Header = ({ activeHeading }) => {
             </div>
           </div>
           <div className="flex items-center">
-            <div className="relative cursor-pointer mr-[15px]">
+            <div className="relative z-[20] cursor-pointer mr-[15px]">
               {isAuthenticated ? (
-                <Link to="/profile">
+                <Link to="/profile" className="relative z-[20] block">
                   <img
-                    src={user?.avatar}
-                    className="w-[35px] h-[35px] rounded-full"
+                    src={user?.avatar?.url || user?.avatar}
+                    className="w-[35px] h-[35px] rounded-full object-cover"
                     alt="profile"
                   />
                 </Link>
               ) : (
-                <Link to="/login">
+                <Link to="/login" className="relative z-[20] block">
                   <CgProfile
                     size={30}
                     style={{ color: "rgba(255,255,255,0.83)" }}
@@ -314,7 +314,7 @@ const Header = ({ activeHeading }) => {
                     const Product_name = d.replace(/\s+/g, "-");
                     return (
                       <Link
-                        to={`/product/${i._id}`} 
+                        to={`/product/${i._id}`}
                         key={index}
                         onClick={() => {
                           closeSearch();
@@ -323,7 +323,7 @@ const Header = ({ activeHeading }) => {
                       >
                         <div className="flex items-center">
                           <img
-                             src={i.images && i.images[0]?.url} 
+                            src={i.images && i.images[0]?.url}
                             alt={i.name}
                             className="w-[50px] mr-2"
                           />
@@ -353,9 +353,9 @@ const Header = ({ activeHeading }) => {
                 <div>
                   <Link to="/profile">
                     <img
-                      src={user?.avatar}
+                      src={user?.avatar?.url || user?.avatar}
                       alt=""
-                      className="w-[60px] h-[60px] rounded-full border-[3px] border-[#0eae88]"
+                      className="w-[60px] h-[60px] rounded-full object-cover border-[3px] border-[#0eae88]"
                     />
                   </Link>
                 </div>

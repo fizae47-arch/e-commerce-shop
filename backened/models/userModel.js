@@ -25,13 +25,17 @@ const userSchema = new mongoose.Schema({
         select: false,
     },
     phoneNumber: {
-        type: Number, // ✅ add kiya - profile form aur updateUserInfo isko use karte hain
+        type: Number,
     },
     avatar: {
-        type: String,
-        required: true,
+        public_id: {
+            type: String,
+        },
+        url: {
+            type: String,
+        },
     },
-    addresses: [ // ✅ add kiya - address add/delete/update isi field pe kaam karta hai
+    addresses: [
         {
             country: {
                 type: String,
@@ -60,7 +64,7 @@ const userSchema = new mongoose.Schema({
     },
     isActivated: {
         type: Boolean,
-        default: false, // important for activation flow
+        default: false,
     },
     createdAt: {
         type: Date,

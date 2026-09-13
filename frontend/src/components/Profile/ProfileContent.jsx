@@ -83,9 +83,9 @@ const ProfileContent = ({ active }) => {
           <div className="flex justify-center w-full">
             <div className="relative">
               <img
-                src={avatar || `${user?.avatar}`}
-                className="w-[150px] h-[150px] rounded-full object-cover border-[3px] border-[#3ad132]"
+                src={avatar ? avatar : user?.avatar?.url || user?.avatar}
                 alt=""
+                className="w-[150px] h-[150px] rounded-full object-cover border-[3px] border-[#3ad132]"
               />
               <div className="w-[30px] h-[30px] bg-[#E3E9EE] rounded-full flex items-center justify-center cursor-pointer absolute bottom-[5px] right-[5px]">
                 <input
@@ -217,8 +217,8 @@ const AllOrders = () => {
       minWidth: 130,
       flex: 0.7,
       cellClassName: (params) => {
-  return params.row.status === "Delivered" ? "greenColor" : "redColor";
-},
+        return params.row.status === "Delivered" ? "greenColor" : "redColor";
+      },
     },
     {
       field: "itemsQty",
@@ -303,8 +303,8 @@ const AllRefundOrders = () => {
       minWidth: 130,
       flex: 0.7,
       cellClassName: (params) => {
-  return params.row.status === "Delivered" ? "greenColor" : "redColor";
-},
+        return params.row.status === "Delivered" ? "greenColor" : "redColor";
+      },
     },
     {
       field: "itemsQty",
@@ -385,9 +385,9 @@ const TrackOrder = () => {
       headerName: "Status",
       minWidth: 130,
       flex: 0.7,
-     cellClassName: (params) => {
-  return params.row.status === "Delivered" ? "greenColor" : "redColor";
-},
+      cellClassName: (params) => {
+        return params.row.status === "Delivered" ? "greenColor" : "redColor";
+      },
     },
     {
       field: "itemsQty",

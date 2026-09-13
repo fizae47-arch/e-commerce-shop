@@ -15,25 +15,8 @@ const {
     getAllUsers,
     getUserInfo,
 } = require("../controllers/userController");
-const multer = require("multer");
+const { upload } = require("../multer");
 const { isAuthenticatedUser } = require("../middleware/auth");
-const { getUploadDir } = require("../untils/uploadDir");
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, getUploadDir("uploads"));
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-        const ext = file.originalname.split(".").pop();
-        cb(null, uniqueSuffix + "." + ext);
-    },
-});
-
-const upload = multer({
-    storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
-});
 
 // Routes
 router.post("/register", upload.single("profilePhoto"), registerUser);

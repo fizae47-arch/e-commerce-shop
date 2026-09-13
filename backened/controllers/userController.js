@@ -6,6 +6,7 @@ const sendEmail = require("../untils/sendMail");
 const sendToken = require("../untils/jwtToken");
 const { isAuthenticatedUser } = require("../middleware/auth");
 const path = require("path");
+const cloudinary = require("cloudinary");
 const { getFrontendUrl, getBackendUrl } = require("../untils/origins");
 
 // -----------------------------
@@ -13,19 +14,32 @@ const { getFrontendUrl, getBackendUrl } = require("../untils/origins");
 // -----------------------------
 function createActivationToken(user) {
     return jwt.sign(
-        { id: user._id },   // ✅ only sign the user ID
+        { id: user._id },
         process.env.ACTIVATION_SECRET,
         { expiresIn: "7d" }
     );
 }
 
 // -----------------------------
+// Helper: Upload buffer to Cloudinary
+// -----------------------------
+function uploadToCloudinary(fileBuffer, folder = "avatars") {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.v2.uploader.upload_stream(
+            { folder },
+            (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+            }
+        );
+        stream.end(fileBuffer);
+    });
+}
+
+// -----------------------------
 // Register User
 // -----------------------------
 exports.registerUser = catchAsyncErrors(async (req, res, next) => {
-    // console.log("BODY:", req.body);
-    // console.log("FILE:", req.file);
-
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
@@ -41,13 +55,16 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler("User already exists", 400));
     }
 
-    const fileUrl = `${getBackendUrl(req)}/uploads/${req.file.filename}`;
+    const myCloudResult = await uploadToCloudinary(req.file.buffer);
 
     const user = await User.create({
         name,
         email,
         password,
-        avatar: fileUrl,
+        avatar: {
+            public_id: myCloudResult.public_id,
+            url: myCloudResult.secure_url,
+        },
         isActivated: false,
     });
 
@@ -76,18 +93,15 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
 exports.activateAccount = catchAsyncErrors(async (req, res, next) => {
     const { activationToken } = req.body;
 
-    // Decode token to get user ID
     const decoded = jwt.verify(activationToken, process.env.ACTIVATION_SECRET);
 
-    // Find user by ID
     const user = await User.findById(decoded.id);
 
     if (!user) {
         return next(new ErrorHandler("User not found", 404));
     }
 
-    // Mark as activated
-   user.isActivated = true;
+    user.isActivated = true;
     await user.save();
 
     sendToken(user, 200, res);
@@ -207,21 +221,18 @@ exports.updateAvatar = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler("User not found", 404));
     }
 
-    // ✅ purani avatar file delete karo (agar local uploads folder me hai)
-    if (user.avatar) {
-        const oldFilename = user.avatar.split("/uploads/")[1];
-        if (oldFilename) {
-            const fs = require("fs");
-            const oldFilePath = path.join(__dirname, "..", "uploads", oldFilename);
-            fs.unlink(oldFilePath, (err) => {
-                if (err) console.log("Old avatar delete failed:", err.message);
-            });
-        }
+    // Purana Cloudinary avatar delete karo (agar object format mein hai)
+    if (user.avatar && user.avatar.public_id) {
+        await cloudinary.v2.uploader.destroy(user.avatar.public_id);
     }
 
-    const fileUrl = `${getBackendUrl(req)}/uploads/${req.file.filename}`;
+    const myCloudResult = await uploadToCloudinary(req.file.buffer);
 
-    user.avatar = fileUrl;
+    user.avatar = {
+        public_id: myCloudResult.public_id,
+        url: myCloudResult.secure_url,
+    };
+
     await user.save();
 
     res.status(200).json({
@@ -282,7 +293,6 @@ exports.updateUserAddress = catchAsyncErrors(async (req, res, next) => {
     if (existsAddress) {
         Object.assign(existsAddress, req.body);
     } else {
-        // add new address
         user.addresses.push(req.body);
     }
 
