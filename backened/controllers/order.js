@@ -100,10 +100,21 @@ router.put(
       if (!order) {
         return next(new ErrorHandler("Order not found with this id", 400));
       }
-      if (req.body.status === "Transferred to delivery partner") {
-        order.cart.forEach(async (o) => {
+
+      // ✅ Stock/sold_out update sirf ek hi baar ho — chahe order seedha
+      // "Transferred to delivery partner" se guzre ya seedha "Delivered" pe jaye
+      const alreadyUpdatedStock =
+        order.status === "Transferred to delivery partner" ||
+        order.status === "Delivered";
+
+      if (
+        !alreadyUpdatedStock &&
+        (req.body.status === "Transferred to delivery partner" ||
+          req.body.status === "Delivered")
+      ) {
+        for (const o of order.cart) {
           await updateOrder(o._id, o.qty);
-        });
+        }
       }
 
       order.status = req.body.status;
@@ -111,7 +122,7 @@ router.put(
       if (req.body.status === "Delivered") {
         order.deliveredAt = Date.now();
         order.paymentInfo.status = "Succeeded";
-        const serviceCharge = order.totalPrice * .10;
+        const serviceCharge = order.totalPrice * 0.10;
         await updateSellerInfo(order.totalPrice - serviceCharge);
       }
 
@@ -125,6 +136,8 @@ router.put(
       async function updateOrder(id, qty) {
         const product = await Product.findById(id);
 
+        if (!product) return;
+
         product.stock -= qty;
         product.sold_out += qty;
 
@@ -133,7 +146,7 @@ router.put(
 
       async function updateSellerInfo(amount) {
         const seller = await Shop.findById(req.seller.id);
-        
+
         seller.availableBalance = amount;
 
         await seller.save();
@@ -192,13 +205,15 @@ router.put(
       });
 
       if (req.body.status === "Refund Success") {
-        order.cart.forEach(async (o) => {
+        for (const o of order.cart) {
           await updateOrder(o._id, o.qty);
-        });
+        }
       }
 
       async function updateOrder(id, qty) {
         const product = await Product.findById(id);
+
+        if (!product) return;
 
         product.stock += qty;
         product.sold_out -= qty;

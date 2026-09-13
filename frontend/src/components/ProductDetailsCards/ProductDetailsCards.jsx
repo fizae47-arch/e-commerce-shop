@@ -1,24 +1,57 @@
 import { useEffect, useState } from "react";
 import { RxCross1 } from "react-icons/rx";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "../../styles/style";
 import { AiOutlineMessage, AiFillHeart, AiOutlineHeart, AiOutlineShoppingCart } from "react-icons/ai";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
+import axios from "axios";
+import { server } from "../../server";
 import { addToCart } from "../../redux/reducers/cart";
 import { addWishlistItem, removeWishlistItem } from "../../redux/actions/wishlist";
 
 const ProductDetailsCards = ({ setOpen, data }) => {
   const { cart } = useSelector((state) => state.cart);
   const { wishlist } = useSelector((state) => state.wishlist);
+  const { user, isAuthenticated } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
 
   // ✅ har product ka apna unique id
   const productId = data._id || data.id;
+  const shopId = data?.shop?._id;
 
-  const handleMessageSubmit = () => {};
+  const handleMessageSubmit = async () => {
+    if (!shopId) {
+      toast.error("Messaging isn't available for this product's shop");
+      return;
+    }
+    if (!isAuthenticated) {
+      toast.error("Please login to create a conversation");
+      return;
+    }
+
+    const groupTitle = productId + user._id;
+    const userId = user._id;
+    const sellerId = shopId;
+
+    await axios
+      .post(`${server}/conversation/create-new-conversation`, {
+        groupTitle,
+        userId,
+        sellerId,
+      })
+      .then((res) => {
+        setOpen(false); // modal band karein navigate se pehle
+        navigate(`/inbox?${res.data.conversation._id}`);
+      })
+      .catch((error) => {
+        toast.error(error.response?.data?.message || "Something went wrong");
+      });
+  };
+
   const decrementCount = () => {
     if (count > 1) setCount(count - 1);
   };
