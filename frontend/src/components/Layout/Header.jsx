@@ -229,12 +229,6 @@ const Header = ({ activeHeading }) => {
               )}
             </div>
           </div>
-          {/* cart popup */}
-          {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
-          {/* Wishlist popup */}
-          {openWishList ? (
-            <Wishlist setOpenWishlist={setOpenWishList} />
-          ) : null}
         </div>
       </div>
 
@@ -379,6 +373,12 @@ const Header = ({ activeHeading }) => {
           </div>
         </div>
       )}
+
+      {/* cart popup — ab desktop & mobile dono ke liye kaam karega */}
+      {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
+
+      {/* Wishlist popup — ab desktop & mobile dono ke liye kaam karega */}
+      {openWishList ? <Wishlist setOpenWishlist={setOpenWishList} /> : null}
     </>
   );
 };
