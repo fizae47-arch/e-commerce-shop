@@ -105,15 +105,15 @@ const ShopProfileData = ({ isOwner }) => {
         <div className="w-full">
           {allReviews &&
             allReviews.map((item, index) => (
-              <div className="w-full flex my-4">
+              <div className="w-full flex my-4" key={index}>
                 <img
-                  src={item.user?.avatar}
-                  className="w-[50px] h-[50px] rounded-full"
+                  src={item.user?.avatar?.url || item.user?.avatar}
+                  className="w-[50px] h-[50px] rounded-full object-cover"
                   alt=""
                 />
                 <div className="pl-2">
                   <div className="flex w-full items-center">
-                    <h1 className="font-[600] pr-2">{item.user.name}</h1>
+                    <h1 className="font-[600] pr-2">{item.user?.name}</h1>
                     <Ratings rating={item.rating} />
                   </div>
                   <p className="font-[400] text-[#000000a7]">{item?.comment}</p>
